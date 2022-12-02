@@ -125,7 +125,7 @@ const App = () => {
 */
 
 // Unicafe App
-
+/*
 const Button = ({ handleClickFunc, text }) => (
   <button onClick={handleClickFunc}>
     {text}
@@ -213,6 +213,133 @@ const App = () => {
 
       <h1>statistics</h1>
       <Statistics array={[good, neutral, bad]} score={score} feedback={total} />
+    </div>
+  )
+}
+
+
+const Anecdote = ({ anecdotes, index, votes }) => {
+  return (
+    <div>
+      {anecdotes[index]}
+      <p>has {votes[index]} votes</p>
+    </div>
+  )
+}
+*/
+const Button = ({ handleClick, text }) => (
+  <button onClick={handleClick}>
+    {text}
+  </button>
+)
+
+const App = () => {
+  const anecdotes = [
+    'If it hurts, do it more often.',
+    'Adding manpower to a late software project makes it later!',
+    'The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    'Premature optimization is the root of all evil.',
+    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
+    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.'
+  ]
+
+  const [selected, setSelected] = useState(0);
+  /*
+  const points = new Array(anecdotes.length).fill(0);
+  const copy = [...points];
+  const [score, setScore] = useState(copy);
+
+  const pickAnecdote = () => {
+    let num = getRandomInt();
+    setSelected(num);
+  }
+
+  const voteAnecdote = () => {
+    score[selected] += 1;
+    setScore(score);
+  }
+
+  const getRandomInt = () => {
+    return Math.floor(Math.random() * anecdotes.length);
+  }
+
+  const getMax = () => {
+    let max = copy[0];
+    let maxIndex = 0;
+    for (let i = 0; i < copy.length; i++) {
+      if (copy[i] > max) {
+        maxIndex = i;
+        max = copy[i];
+      }
+    }
+
+    return maxIndex;
+  }
+
+  return (
+    <div>
+      <h1>Anecdote of the day</h1>
+      <Anecdote anecdotes={anecdotes} index={selected} votes={score} />
+      <Button handleClick={voteAnecdote} text="vote" />
+      <Button handleClick={pickAnecdote} text="next anecdote" />
+
+      <h1>Anecdote with the most votes</h1>
+      <Anecdote anecdotes={anecdotes} index={getMax()} votes={score} />
+    </div>
+  )*/
+
+  const votes = new Array(anecdotes.length).fill(0);
+  const copy = [...votes];
+  const [score, setScore] = useState(copy);
+  const [maxIndex, setMaxIndex] = useState(0);
+
+  const getRandInt = () => {
+    return Math.floor(Math.random() * anecdotes.length);
+  }
+
+  const getAnecdote = () => {
+    let num = getRandInt();
+    setSelected(num);
+  }
+
+  const voteAnecdote = () => {
+    score[selected] += 1;
+    setScore(score);
+    getMaxAnecdote();
+  }
+
+  const getMaxAnecdote = () => {
+    let max = score[maxIndex];
+
+    for (let i = 0; i < score.length; i++) {
+      if (score[i] > max) {
+        max = score[i];
+        setMaxIndex(i);
+      }
+    }
+  }
+
+  return (
+    <div>
+      <h1>Anecdote of the day</h1>
+      <Anecdote anecdote={anecdotes[selected]} votes={score[selected]} />
+      <Button handleClick={voteAnecdote} text='vote' />
+      <Button handleClick={getAnecdote} text='next anecdote' />
+
+      <h1>Anecdote with the most votes</h1>
+      <Anecdote anecdote={anecdotes[maxIndex]} votes={score[maxIndex]}/>
+    </div>
+  )
+}
+
+const Anecdote = ({ anecdote, votes }) => {
+  return (
+    <div>
+      {anecdote}
+      <br></br>
+      has {votes} votes
+      <br></br>
     </div>
   )
 }
