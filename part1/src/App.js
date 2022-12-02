@@ -250,11 +250,9 @@ const App = () => {
   const [votes, setVotes] = useState([0,0,0,0,0,0,0]);
 
   let maxIndex = 0;
-  let max = votes[maxIndex];
 
   for (let i = 0; i < votes.length; i++) {
-    if (votes[i] > max) {
-      max = votes[i];
+    if (votes[i] > votes[maxIndex]) {
       maxIndex = i;
     }
   }
