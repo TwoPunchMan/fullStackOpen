@@ -216,17 +216,19 @@ const App = () => {
     </div>
   )
 }
+*/
 
-
-const Anecdote = ({ anecdotes, index, votes }) => {
+const Anecdote = ({ anecdote, votes }) => {
   return (
     <div>
-      {anecdotes[index]}
-      <p>has {votes[index]} votes</p>
+      {anecdote}
+      <div>
+        has {votes} votes
+      </div>
     </div>
   )
 }
-*/
+
 const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>
     {text}
@@ -245,54 +247,17 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0);
-  /*
-  const points = new Array(anecdotes.length).fill(0);
-  const copy = [...points];
-  const [score, setScore] = useState(copy);
+  const [votes, setVotes] = useState([0,0,0,0,0,0,0]);
 
-  const pickAnecdote = () => {
-    let num = getRandomInt();
-    setSelected(num);
-  }
+  let maxIndex = 0;
+  let max = votes[maxIndex];
 
-  const voteAnecdote = () => {
-    score[selected] += 1;
-    setScore(score);
-  }
-
-  const getRandomInt = () => {
-    return Math.floor(Math.random() * anecdotes.length);
-  }
-
-  const getMax = () => {
-    let max = copy[0];
-    let maxIndex = 0;
-    for (let i = 0; i < copy.length; i++) {
-      if (copy[i] > max) {
-        maxIndex = i;
-        max = copy[i];
-      }
+  for (let i = 0; i < votes.length; i++) {
+    if (votes[i] > max) {
+      max = votes[i];
+      maxIndex = i;
     }
-
-    return maxIndex;
   }
-
-  return (
-    <div>
-      <h1>Anecdote of the day</h1>
-      <Anecdote anecdotes={anecdotes} index={selected} votes={score} />
-      <Button handleClick={voteAnecdote} text="vote" />
-      <Button handleClick={pickAnecdote} text="next anecdote" />
-
-      <h1>Anecdote with the most votes</h1>
-      <Anecdote anecdotes={anecdotes} index={getMax()} votes={score} />
-    </div>
-  )*/
-
-  const votes = new Array(anecdotes.length).fill(0);
-  const copy = [...votes];
-  const [score, setScore] = useState(copy);
-  const [maxIndex, setMaxIndex] = useState(0);
 
   const getRandInt = () => {
     return Math.floor(Math.random() * anecdotes.length);
@@ -304,42 +269,20 @@ const App = () => {
   }
 
   const voteAnecdote = () => {
-    score[selected] += 1;
-    setScore(score);
-    getMaxAnecdote();
-  }
-
-  const getMaxAnecdote = () => {
-    let max = score[maxIndex];
-
-    for (let i = 0; i < score.length; i++) {
-      if (score[i] > max) {
-        max = score[i];
-        setMaxIndex(i);
-      }
-    }
+    const copy = [...votes];
+    copy[selected] += 1;
+    setVotes(copy);
   }
 
   return (
     <div>
       <h1>Anecdote of the day</h1>
-      <Anecdote anecdote={anecdotes[selected]} votes={score[selected]} />
+      <Anecdote anecdote={anecdotes[selected]} votes={votes[selected]} />
       <Button handleClick={voteAnecdote} text='vote' />
       <Button handleClick={getAnecdote} text='next anecdote' />
 
       <h1>Anecdote with the most votes</h1>
-      <Anecdote anecdote={anecdotes[maxIndex]} votes={score[maxIndex]}/>
-    </div>
-  )
-}
-
-const Anecdote = ({ anecdote, votes }) => {
-  return (
-    <div>
-      {anecdote}
-      <br></br>
-      has {votes} votes
-      <br></br>
+      <Anecdote anecdote={anecdotes[maxIndex]} votes={votes[maxIndex]}/>
     </div>
   )
 }
