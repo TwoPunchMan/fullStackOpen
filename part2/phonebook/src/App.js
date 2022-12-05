@@ -1,11 +1,20 @@
 import { useState } from 'react'
+import Filter from './components/Filter';
+import PersonForm from './components/PersonForm';
+import Persons from './components/Persons';
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ]);
 
   const [newName, setNewName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [search, setSearch] = useState('');
+  const [filterInEffect, setFilterStatus] = useState(false);
 
   const addNewPerson = (event) => {
     event.preventDefault();
@@ -17,32 +26,39 @@ const App = () => {
     }
 
     const person = {
-      name: newName
+      name: newName,
+      number: newPhone
     }
 
     setPersons(persons.concat(person));
     setNewName('');
+    setNewPhone('');
   }
 
   const handlePersonChange = (event) => {
     setNewName(event.target.value);
   }
 
-  const checkEqual = (p1, p2) => {
-    const p1Names = Object.getOwnPropertyNames(p1);
-    const p2Names = Object.getOwnPropertyNames(p2);
-
-    if (p1Names !== p2Names) return false;
-
-    if (p1Names.length !== p2Names.length) return false;
-
-    const hasAllKeys = p1Names.every(value => !!p2Names.find(v => v === value));
-    if (!hasAllKeys) return false;
-
-    for (const key of p1Names) if (p1[key] !== p2[key]) return false;
-
-    return true;
+  const handlePhoneChange = (event) => {
+    setNewPhone(event.target.value);
   }
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+
+    if (search.length === 0) {
+      setFilterStatus(false);
+    } else {
+      setFilterStatus(true);
+    }
+  }
+
+  const personsToShow = filterInEffect
+    ? persons.filter(person =>
+        person.name.toLowerCase()
+          .indexOf(search.toLowerCase()) !== -1
+      )
+    : persons;
 
   const checkIfPersonExist = (findName) => {
     return persons.find(person => person.name === findName);
@@ -51,18 +67,13 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNewPerson}>
-        <div>
-          name: <input value={newName} onChange={handlePersonChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <div>
-        {persons.map(person => <div key={person.name}>{person.name}</div>)}
-      </div>
+      <Filter search={search} onChangeFunc={handleSearchChange} />
+
+      <h3>add a new</h3>
+      <PersonForm addPerson={addNewPerson} values={[newName, newPhone]} onChangeFunc={[handlePersonChange, handlePhoneChange]} />
+
+      <h3>Numbers</h3>
+      <Persons people={personsToShow} />
     </div>
   )
 }
