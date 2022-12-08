@@ -10,13 +10,27 @@ const App = () => {
   const [matchCountries, setMatchCountries] = useState(countries);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterActive, setFilterStatus] = useState(false);
-  const [renderFunction, setRenderFunction] = useState(<div></div>);
+  const [view, setView] = useState(<div></div>);
+  const [weatherData, setWeatherData] = useState({});
+
+  const api_key = process.env.REACT_APP_API_KEY;
 
   const hook = () => {
     axios
       .get('https://restcountries.com/v3.1/all')
       .then(response => {
         setCountries(response.data);
+      });
+  }
+
+  const getCountryWeatherData = (lat, lon) => {
+    let data;
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${api_key}`)
+      .then(response => {
+        setWeatherData(response.data);
+        console.log(data);
+        return data;
       });
   }
 
@@ -50,14 +64,14 @@ const App = () => {
 
     if (isFilterActive) {
       if (countriesListLength === 1) {
-        setRenderFunction(listCountryStats(matchCountries[0]));
+        setView(listCountryStats(matchCountries[0]));
       } else if (countriesListLength <= 10 && countriesListLength > 1) {
-        setRenderFunction(listMatchCountries());
+        setView(listMatchCountries());
       } else {
-        setRenderFunction(tooManyMatchesMsg());
+        setView(tooManyMatchesMsg());
       }
     } else {
-      setRenderFunction(listNothing());
+      setView(listNothing());
     }
   }
 
@@ -71,11 +85,16 @@ const App = () => {
   const listMatchCountries = () =>
     matchCountries.map(country =>
       <div key={country.name.common}>
-        <Country country={country} showStats={listCountryStats} renderState={setRenderFunction} />
+        <Country country={country} showStats={listCountryStats} renderState={setView} getWeather={getCountryWeatherData}/>
       </div>
     )
 
   const listCountryStats = (country) => {
+    const [lat, lon] = country.capitalInfo.latlng;
+    const weatherData = getCountryWeatherData(lat, lon);
+    console.log(weatherData);
+    const temp = weatherData.main.temp;
+
     return (
       <div>
         <h1>{country.name.common}</h1>
@@ -91,6 +110,16 @@ const App = () => {
             )}
         </ul>
         <img src={country.flags['png']} alt="country flag" />
+        <h2>Weather in {country.capital[0]}</h2>
+        <div>
+          <div>
+            temperature {temp} Celsius
+          </div>
+          <img src="" alt="weather icon" />
+          <div>
+            wind
+          </div>
+        </div>
       </div>
     )
   }
@@ -98,7 +127,7 @@ const App = () => {
   return (
     <div>
       <Filter search={searchTerm} onChangeFunc={handleSearchChange} />
-      <Display render={renderFunction} />
+      <Display render={view} />
     </div>
   );
 }
