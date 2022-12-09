@@ -1,6 +1,6 @@
 const PersonForm = ({ addPerson, values, onChangeFunc }) => {
-	const { newName, newPhone } = [...values];
-	const { handlePersonChange, handlePhoneChange } = [...onChangeFunc];
+	const [ newName, newPhone ] = [...values];
+	const [ handlePersonChange, handlePhoneChange ] = [...onChangeFunc];
 
 	return (
 		<form onSubmit={addPerson}>

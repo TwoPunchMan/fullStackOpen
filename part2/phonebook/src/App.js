@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+
+import phonebookService from './services/phonebook';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,34 +13,64 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [filterInEffect, setFilterStatus] = useState(false);
 
-  const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('response GET fulfilled');
-        setPersons(response.data);
-      });
+  const loadPhonebook = () => {
+    phonebookService
+      .getAll()
+      .then(phonebook => {
+        setPersons(phonebook);
+      })
   }
 
-  useEffect(hook, []);
+  useEffect(loadPhonebook, []);
 
   const addNewPerson = (event) => {
     event.preventDefault();
-    if (newName === '') return;
+    const personAlreadyExist = checkIfPersonExist(newName);
 
-    if (checkIfPersonExist(newName)) {
-      alert(`${newName} is already added to phonebook`);
+    if (newName === '') {
       return;
     }
 
-    const person = {
-      name: newName,
-      number: newPhone
+    if (personAlreadyExist) {
+      updatePerson(personAlreadyExist);
+      return;
     }
 
-    setPersons(persons.concat(person));
-    setNewName('');
-    setNewPhone('');
+    const newPerson = {
+      name: newName,
+      number: newPhone,
+      id: persons.length + 1
+    }
+
+    phonebookService
+      .addPerson(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName('');
+        setNewPhone('');
+      });
+  }
+
+  const updatePerson = (person) => {
+    const changedPerson = {...person, number: newPhone};
+
+    if (window.confirm(`${person.name} is already added to phonebook, replace the old number with a new one?`)) {
+      phonebookService
+        .updatePerson(changedPerson)
+        .then(updatePeople => {
+          setPersons(updatePeople);
+        });
+    }
+  }
+
+  const deletePerson = (person) => {
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      phonebookService
+        .deletePerson(person.id)
+        .then(people => {
+          setPersons(people);
+        });
+    }
   }
 
   const handlePersonChange = (event) => {
@@ -80,7 +111,7 @@ const App = () => {
       <PersonForm addPerson={addNewPerson} values={[newName, newPhone]} onChangeFunc={[handlePersonChange, handlePhoneChange]} />
 
       <h3>Numbers</h3>
-      <Persons people={personsToShow} />
+      <Persons people={personsToShow} deleteFunc={deletePerson} />
     </div>
   )
 }
