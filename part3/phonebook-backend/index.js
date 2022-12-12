@@ -8,7 +8,7 @@ let phonebook = [
 		"id": 1,
 		"name": "Arto Hellas",
 		"number": "040-123456"
-	},
+    },
 	{
 		"id": 2,
 		"name": "Ada Lovelace",
@@ -76,7 +76,8 @@ const generateId = () => {
 }
 
 app.post('/api/persons', (request, response) => {
-	const person = request.body;
+	let person = request.body;
+	person.id = generateId();
 
 	if (!person.name || !person.number) {
 		return response.status(400).json({
@@ -94,15 +95,18 @@ app.post('/api/persons', (request, response) => {
 		});
 	}
 
-	const addPerson = {
-		name: person.name,
-		number: person.number,
-		id: generateId()
-	}
-
-	phonebook = phonebook.concat(addPerson);
+	phonebook = phonebook.concat(person);
 
 	response.json(person);
+});
+
+app.put('/api/persons/:id', (request, response) => {
+	const updatedPerson = request.body;
+	const index = phonebook.findIndex(p => p.name === updatedPerson.name);
+
+    phonebook[index] = updatedPerson;
+
+    response.json(phonebook);
 });
 
 app.delete('/api/persons/:id', (request, response) => {
