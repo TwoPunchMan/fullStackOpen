@@ -35,7 +35,7 @@ const App = () => {
   const addNewPerson = (event) => {
     event.preventDefault();
     const personAlreadyExist = checkIfPersonExist(newName);
-    console.log(personAlreadyExist);
+
     if (newName === '') {
       return;
     }
@@ -71,8 +71,10 @@ const App = () => {
     if (window.confirm(updateMsg)) {
       phonebookService
         .updatePersonNumber(person.id, changedPerson)
-        .then(updatePeople => {
-          setPersons(updatePeople);
+        .then(updatedPerson => {
+          const index = persons.findIndex(p => p.id === updatedPerson.id);
+          persons[index] = updatedPerson;
+          setPersons(persons);
           notify(`Updated number for ${changedPerson.name}`)
           setNewName('');
           setNewPhone('');

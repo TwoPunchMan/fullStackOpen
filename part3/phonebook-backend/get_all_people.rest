@@ -8,3 +8,13 @@ Content-Type: application/json
   "name": "Ada wong",
   "number": "12345"
 }
+
+###
+DELETE http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+  "id": "63990f1bc2ff510ea7af5125",
+  "name": "Anna",
+  "number": "98765443"
+}
