@@ -13,7 +13,7 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [filterInEffect, setFilterStatus] = useState(false);
   const [message, setMessage] = useState(null);
-
+	const [error, setError] = useState(false);
 
   const loadPhonebook = () => {
     phonebookService
@@ -56,10 +56,12 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName('');
         setNewPhone('');
+				setError(false);
         notify(`Added ${newPerson.name}`)
       })
       .catch(error => {
-        notify(`${error}`)
+				setError(true);
+        notify(`${error.response.data.error}`);
       })
   }
 
@@ -75,34 +77,37 @@ const App = () => {
           const index = persons.findIndex(p => p.id === updatedPerson.id);
           persons[index] = updatedPerson;
           setPersons(persons);
+					setError(false);
           notify(`Updated number for ${changedPerson.name}`)
           setNewName('');
           setNewPhone('');
         })
         .catch(error => {
-          notify(`wtf`)
+					setError(true);
+          notify(`${error.response.data.error}`);
         })
     }
   }
 
-  const deletePerson = (person) => {
+	const deletePerson = (person) => {
     const name = person.name;
     if (window.confirm(`Delete ${person.name} ?`)) {
       phonebookService
         .deletePerson(person)
         .then(() => {
+					setError(false);
           notify(`${name} has been deleted`)
           setPersons(persons.filter(p => p.id !== person.id))
         })
         .catch(error => {
+					setError(true);
           notify(`Information of ${person.name} has already been removed from server`)
         })
     }
   }
 
-  const Notification = ({ msg }) => {
-    const notificationCSS = {
-      color: 'green',
+  const Notification = ({ msg, isError }) => {
+    let notificationCSS = {
       background: 'lightgrey',
       fontSize: 20,
       borderStyle: 'solid',
@@ -110,6 +115,8 @@ const App = () => {
       padding: 10,
       marginBottom: 10
     }
+
+		notificationCSS.color = isError ? 'red' : 'green';
 
     if (msg === null) {
       return null;
@@ -154,7 +161,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification msg={message} />
+      <Notification msg={message} isError={error} />
       <Filter search={search} onChangeFunc={handleSearchChange} />
 
       <h3>add a new</h3>
