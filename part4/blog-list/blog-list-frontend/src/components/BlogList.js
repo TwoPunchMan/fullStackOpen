@@ -1,16 +1,17 @@
-const BlogList = (blogs) => {
-  return (
-		<ul>
-			{blogs.map(blog =>
-				<li>
-					<h3>Title</h3>
-					<h4>Author</h4>
-					<div>Url</div>
-					<div>likes</div>
-				</li>
+import Blog from "./Blog";
+
+const BlogList = ({ blogs }) => {
+  if (blogs.length === 0) {
+    return (<ul></ul>);
+  }
+
+	return (
+    <ul>
+      {blogs.map(blog =>
+        <Blog data={blog} />
 			)}
-		</ul>
-	)
+    </ul>
+  )
 }
 
 export default BlogList;

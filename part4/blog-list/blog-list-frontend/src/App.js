@@ -20,10 +20,23 @@ const App = () => {
 
 	useEffect(loadBlogsFromDB, []);
 
-	const addNewBlog = () => {
+	const addNewBlog = (event) => {
+		event.preventDefault();
+		const newBlog = {
+			title: title,
+			author: author,
+			url: url,
+			likes: likes
+		}
+
 		blogService
-			.addBlog()
-			.then()
+			.addBlog(newBlog)
+			.then(addedBlog => {
+				setBlogs(blogs.concat(addedBlog))
+			})
+			.catch(error => {
+				console.log(error);
+			});
 	}
 
 	const handleTitleChange = (event) => setTitle(event.target.value);
@@ -34,7 +47,7 @@ const App = () => {
   return (
 		<div>
 			<h1>Blog list app</h1>
-			<BlogList />
+			<BlogList blogs={blogs} />
 			<BlogForm submitFunc={addNewBlog} inputFuncs={[handleTitleChange, handleAuthorChange, handleUrlChange, handleLikesChange]} inputValues={[title, author, url, likes]} />
 		</div>
 	)

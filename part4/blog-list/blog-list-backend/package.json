@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf build && cd ../blog-list-frontend && npm run build && cp -r build ../blog-list-backend"
   },
   "author": "",
   "license": "MIT",
@@ -20,5 +21,6 @@
   "devDependencies": {
     "eslint": "^8.29.0",
     "nodemon": "^2.0.20"
-  }
+  },
+  "proxy": "http://localhost:3003"
 }
